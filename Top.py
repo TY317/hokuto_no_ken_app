@@ -5,6 +5,11 @@ st.title("スマスロ北斗の拳")
 
 ##### 新規作成ボタンを押すとデータをすべてリセットする
 
+columns_list = ["リン・バット", "シン", "サウザー", "ジャギ", "アミバ", "ケンシロウ", "ユリア"]
+index_list = ["出現回数", "出現確率"]
+data_list = [[0,0,0,0,0,0,0],[0,0,0,0,0,0,0]]
+csv_file_path = "./pages/after_at_voice_count_df.csv"
+
 #フォームの作成
 with st.form(key='new_play'):
 
@@ -42,12 +47,12 @@ with st.form(key='new_play'):
         at_center_bell_df.to_csv("./pages/at_center_bell_df.csv", index=False)
 
         ##### AT後のボイスカウント用
-        columns_list = ["リン・バット", "シン", "サウザー", "ジャギ", "アミバ", "ケンシロウ", "ユリア"]
-        index_list = ["出現回数", "出現確率"]
-        data_list = [[0,0,0,0,0,0,0],[0,0,0,0,0,0,0]]
+        # columns_list = ["リン・バット", "シン", "サウザー", "ジャギ", "アミバ", "ケンシロウ", "ユリア"]
+        # index_list = ["出現回数", "出現確率"]
+        # data_list = [[0,0,0,0,0,0,0],[0,0,0,0,0,0,0]]
         # index_list = ["出現回数", "出現確率","備考"]
         # data_list = [[0,0,0,0,0,0,0],[0,0,0,0,0,0,0],["デフォルト","高設定示唆(弱)","高設定示唆(弱)","高設定示唆(中)","高設定示唆(強)","設定4以上","設定5以上"]]
-        csv_file_path = "./pages/after_at_voice_count_df.csv"
+        # csv_file_path = "./pages/after_at_voice_count_df.csv"
         df =pd.DataFrame(data_list, index=index_list, columns=columns_list)
         df.to_csv(csv_file_path)
 
