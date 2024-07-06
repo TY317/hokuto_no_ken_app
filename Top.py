@@ -17,6 +17,56 @@ with st.form(key='new_play'):
     st.caption("※ 新規作成ボタンを押すとデータがすべて0リセットされます!")
     st.caption("※ 同時に他の人が利用しているとその人のデータも0リセットされます!恨みっこなしです!")
 
+    #####################################
+    ##### csvの最終更新日を確認し、本日内に更新あれば「使用中」表示をする機能を追加
+    #####################################
+    st.caption("※ データの最終更新が本日だと「本日使用中」表示になります")
+    import os
+    from datetime import datetime
+
+    #csvが保存されているフォルダのパスを定義
+    csv_folder_path = "./pages/"
+
+    #フォルダ内の全ファイルリストを取得
+    files = os.listdir(csv_folder_path)
+    # st.write(files)
+
+    #csvファイルのみを対象にしたリストを作る
+    csv_files = [file for file in files if file.endswith(".csv")]
+    # st.write(csv_files)
+
+    # 最も最近の更新日時を保存する変数を初期化
+    most_recent_date = None
+
+    #最も最近の更新日時を取得する
+    for csv_file in csv_files:
+        file_path = os.path.join(csv_folder_path, csv_file)
+
+        #最終更新日時を取得
+        mtime = os.path.getmtime(file_path)
+
+        #人間が読める形式に変換
+        last_modified_date = datetime.fromtimestamp(mtime)
+        # st.write(last_modified_date)
+
+        #更新日時が最も最近だったら変数に入れる
+        if most_recent_date is None or last_modified_date > most_recent_date:
+            most_recent_date = last_modified_date
+    # st.write(most_recent_date)
+
+    #本日の日付を取得
+    today = datetime.now().date()
+
+    #最新更新日が本日と同じなら「本日使用中」、違えば「本日未使用」を表示
+    if most_recent_date is not None and most_recent_date.date() == today:
+        st.markdown(":red-background[本日使用中]")
+    else:
+        st.markdown(":green-background[本日未使用]")
+
+    ###################################
+    ###################################
+    ###################################
+
     #新規作成ボタンの設定
     start_btn = st.form_submit_button("新規作成")
 
@@ -63,5 +113,10 @@ with st.form(key='new_play'):
         #                 columns=columns_list)
         # df.to_csv(csv_file_path, index=False)
         
+########################################
+##### バージョン情報 ####################
+########################################
+st.caption("ver1.0.1")
+st.caption("   ・本日未使用・使用中の表示機能追加")
 st.caption("ver1.0.0")
 st.caption("   ・新規作成")
