@@ -22,7 +22,7 @@ with st.form(key='new_play'):
     #####################################
     st.caption("※ データの最終更新が本日だと「本日使用中」表示になります")
     import os
-    from datetime import datetime
+    from datetime import datetime, timedelta
 
     #csvが保存されているフォルダのパスを定義
     csv_folder_path = "./pages/"
@@ -47,6 +47,9 @@ with st.form(key='new_play'):
 
         #人間が読める形式に変換
         last_modified_date = datetime.fromtimestamp(mtime)
+
+        #9時間を加算して日本時間に変換
+        last_modified_date = last_modified_date + timedelta(hours=9)
         # st.write(last_modified_date)
 
         #更新日時が最も最近だったら変数に入れる
@@ -54,9 +57,16 @@ with st.form(key='new_play'):
             most_recent_date = last_modified_date
     st.write(most_recent_date)
 
+    #現在日時を取得
+    today = datetime.now()
+
+    #9時間を加算して日本時間に変換
+    today = today + timedelta(hours=9)
+    
     #本日の日付を取得
-    today = datetime.now().date()
-    st.write(datetime.now())
+    today = today.date()
+
+    st.write(today)
 
     #最新更新日が本日と同じなら「本日使用中」、違えば「本日未使用」を表示
     if most_recent_date is not None and most_recent_date.date() == today:
