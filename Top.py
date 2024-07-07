@@ -55,7 +55,7 @@ with st.form(key='new_play'):
         #更新日時が最も最近だったら変数に入れる
         if most_recent_date is None or last_modified_date > most_recent_date:
             most_recent_date = last_modified_date
-    st.write(most_recent_date)
+    # st.write(most_recent_date)
 
     #現在日時を取得
     today = datetime.now()
@@ -66,7 +66,7 @@ with st.form(key='new_play'):
     #本日の日付を取得
     today = today.date()
 
-    st.write(today)
+    # st.write(today)
 
     #最新更新日が本日と同じなら「本日使用中」、違えば「本日未使用」を表示
     if most_recent_date is not None and most_recent_date.date() == today:
