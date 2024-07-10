@@ -4,6 +4,26 @@ import pandas as pd
 ##### ページの内容 #####
 # 通常時の中段ベルカウント用
 
+########################################
+##### マイナス、1行削除のための変数・関数定義
+########################################
+
+#マイナス、1行削除のチェック状態用の変数
+if "minus_check" not in st.session_state:
+    st.session_state["minus_check"] = False
+    minus_check = st.session_state["minus_check"]
+
+def toggle_minus_check():
+    st.session_state["minus_check"] = not st.session_state["minus_check"]
+
+#ボタンの表示文字列の設定
+if st.session_state["minus_check"]:
+    button_str = "マイナス"
+    button_type = "primary"
+else:
+    button_str = "カウント"
+    button_type = "secondary"
+
 #################################
 ##### AT中の中段ベルのカウント ####
 #################################
@@ -27,7 +47,7 @@ with st.form(key="at_center_bell_count"):
         st.caption("中段ベルカウント")
 
         #カウントボタン
-        count_btn = st.form_submit_button("カウント")
+        count_btn = st.form_submit_button(button_str, type=button_type)
 
         ####カウントボタンが押されたらカウントアップさせてcsv保存
         if count_btn:
@@ -35,8 +55,15 @@ with st.form(key="at_center_bell_count"):
             #現在のカウント数を取得する
             current_count = df.loc[0, df.columns[0]]
 
-            #現在のカウントに1を足す
-            new_count = current_count + 1
+            ##### マイナスチェックの状態に合わせてプラスorマイナス
+            if st.session_state["minus_check"]:
+                #現在のカウントから1を引く
+                new_count = current_count - 1
+                if new_count < 0:
+                    new_count = 0
+            else:
+                #現在のカウントに1を足す
+                new_count = current_count + 1
 
             #データフレーム内の数値データを置き換える
             df.at[0, df.columns[0]] = new_count
@@ -94,3 +121,6 @@ with st.form(key="at_center_bell_result"):
 
         #データフレームの表示
         st.dataframe(cb_data_df)
+
+##### マイナスのチェックボックス表示
+st.checkbox("マイナスカウント、1行削除", value=st.session_state["minus_check"], on_change=toggle_minus_check)

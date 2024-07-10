@@ -11,6 +11,26 @@ import datetime
 # 通常時の中段ベルカウント用
 # 参考に設定差のある子役確率を表示
 
+########################################
+##### マイナス、1行削除のための変数・関数定義
+########################################
+
+#マイナス、1行削除のチェック状態用の変数
+if "minus_check" not in st.session_state:
+    st.session_state["minus_check"] = False
+    minus_check = st.session_state["minus_check"]
+
+def toggle_minus_check():
+    st.session_state["minus_check"] = not st.session_state["minus_check"]
+
+#ボタンの表示文字列の設定
+if st.session_state["minus_check"]:
+    button_str = "マイナス"
+    button_type = "primary"
+else:
+    button_str = "カウント"
+    button_type = "secondary"
+
 #################################
 ##### csvファイルの読み込み、なければ作る
 #################################
@@ -50,7 +70,7 @@ with st.form(key="nomal_center_bell_count"):
         st.caption("中段ベルカウント")
 
         #カウントボタン
-        count_btn = st.form_submit_button("カウント")
+        count_btn = st.form_submit_button(button_str, type=button_type)
 
         ####カウントボタンが押されたらカウントアップさせてcsv保存
         if count_btn:
@@ -58,8 +78,16 @@ with st.form(key="nomal_center_bell_count"):
             #現在のカウント数を取得する
             current_count = df.loc[0, df.columns[0]]
 
-            #現在のカウントに1を足す
-            new_count = current_count + 1
+            
+            ##### マイナスチェックの状態に合わせてプラスorマイナス
+            if st.session_state["minus_check"]:
+                #現在のカウントから1を引く
+                new_count = current_count - 1
+                if new_count < 0:
+                    new_count = 0
+            else:
+                #現在のカウントに1を足す
+                new_count = current_count + 1
 
             #データフレーム内の数値データを置き換える
             df.at[0, df.columns[0]] = new_count
@@ -164,8 +192,8 @@ with st.form(key="normal_rea_count"):
         st.caption("天国中弱レア役")
 
         #カウントボタン
-        suika_count_btn = st.form_submit_button("天国中弱スイカ")
-        cherry_count_btn = st.form_submit_button("天国中角チェ")
+        suika_count_btn = st.form_submit_button("天国中弱スイカ", type=button_type)
+        cherry_count_btn = st.form_submit_button("天国中角チェ", type=button_type)
 
         ####カウントボタンが押されたらカウントアップさせてcsv保存
         if suika_count_btn:
@@ -173,8 +201,17 @@ with st.form(key="normal_rea_count"):
             #現在のカウント数を取得する
             suika_current_count = df_rea.loc[0, df_rea.columns[0]]
 
+            ##### マイナスチェックの状態に合わせてプラスorマイナス
+            if st.session_state["minus_check"]:
+                #現在のカウントから1を引く
+                suika_new_count = suika_current_count - 1
+                if suika_new_count < 0:
+                    suika_new_count = 0
+            else:
+                #現在のカウントに1を足す
+                suika_new_count = suika_current_count + 1
             #現在のカウントに1を足す
-            suika_new_count = suika_current_count + 1
+            # suika_new_count = suika_current_count + 1
 
             #データフレーム内の数値データを置き換える
             df_rea.at[0, df_rea.columns[0]] = suika_new_count
@@ -188,8 +225,17 @@ with st.form(key="normal_rea_count"):
             #現在のカウント数を取得する
             cherry_current_count = df_rea.loc[0, df_rea.columns[1]]
 
-            #現在のカウントに1を足す
-            cherry_new_count = cherry_current_count + 1
+            ##### マイナスチェックの状態に合わせてプラスorマイナス
+            if st.session_state["minus_check"]:
+                #現在のカウントから1を引く
+                cherry_new_count = cherry_current_count - 1
+                if cherry_new_count < 0:
+                    cherry_new_count = 0
+            else:
+                #現在のカウントに1を足す
+                cherry_new_count = cherry_current_count + 1
+            # #現在のカウントに1を足す
+            # cherry_new_count = cherry_current_count + 1
 
             #データフレーム内の数値データを置き換える
             df_rea.at[0, df_rea.columns[1]] = cherry_new_count
@@ -218,3 +264,6 @@ df_rea_kaiseki = pd.DataFrame({"弱スイカ": ["10.66%", "10.78%", "16.02%", "1
                                "角チェリー": ["1.75%", "1.85%", "3.87%", "5.43%", "7.14%"]},
                                index=["設定1", "設定2", "設定4", "設定5", "設定6"])
 st.dataframe(df_rea_kaiseki)
+
+##### マイナスのチェックボックス表示
+st.checkbox("マイナスカウント、1行削除", value=st.session_state["minus_check"], on_change=toggle_minus_check)
