@@ -5,6 +5,26 @@ import pandas as pd
 # ATの当選ゲーム数と契機をメモ
 # 当選回数と当選ゲーム数の合算から当選確率を算出
 
+########################################
+##### マイナス、1行削除のための変数・関数定義
+########################################
+
+#マイナス、1行削除のチェック状態用の変数
+if "minus_check" not in st.session_state:
+    st.session_state["minus_check"] = False
+    minus_check = st.session_state["minus_check"]
+
+def toggle_minus_check():
+    st.session_state["minus_check"] = not st.session_state["minus_check"]
+
+#ボタンの表示文字列の設定
+if st.session_state["minus_check"]:
+    button_str = "1行削除"
+    button_type = "primary"
+else:
+    button_str = "登録"
+    button_type = "secondary"
+
 ##############################
 ##### 当選ゲーム数と契機のメモ
 ##############################
@@ -45,17 +65,25 @@ with st.form(key='bonus_data_input'):
         joined_koyaku = ",".join(koyaku)
         
     #登録ボタン
-    submit_btn = st.form_submit_button("登録")
+    submit_btn = st.form_submit_button(button_str, type=button_type)
 
     ##### 登録ボタン押されたらデータフレームにデータ追加
     if submit_btn:
-        #入力されたデータをデータフレームにする
-        df_new = pd.DataFrame({df.columns[0]: [game_num],
-                               df.columns[1]: [joined_mode],
-                               df.columns[2]: [joined_koyaku]})
+        if st.session_state["minus_check"]:
+            #####最後の1行を削除する
+            try:
+                df.drop(df.index[-1], inplace=True)
+            except IndexError:
+                pass
         
-        #すでにあるデータと入力されたデータを合体させたデータフレームにする
-        df = pd.concat([df, df_new])
+        else:
+            #入力されたデータをデータフレームにする
+            df_new = pd.DataFrame({df.columns[0]: [game_num],
+                                    df.columns[1]: [joined_mode],
+                                    df.columns[2]: [joined_koyaku]})
+            
+            #すでにあるデータと入力されたデータを合体させたデータフレームにする
+            df = pd.concat([df, df_new])
 
         #csvに保存する
         df.to_csv("./pages/AT_get_df.csv", index=False)
@@ -110,3 +138,6 @@ with col2:
     #データフレームの表示
     st.dataframe(bb_df)
     # st.image("./pictures/AT初当り確率.bmp")
+
+##### マイナスのチェックボックス表示
+st.checkbox("マイナスカウント、1行削除", value=st.session_state["minus_check"], on_change=toggle_minus_check)
